@@ -523,11 +523,10 @@ a{color:var(--primary-700)}
 .uwrap .un span{color:var(--gray-500);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 
-.ucols{display:flex;gap:14px}
-.ucol{flex:1;min-width:0}
-.ucol .uk{font-size:11px;line-height:15px;color:var(--gray-500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
-.ucol .uv{font-size:13px;line-height:18px;color:var(--gray-400);margin-bottom:5px;font-variant-numeric:tabular-nums}
-.ucol .uv b{font-weight:600;color:var(--gray-900)}
+.uln{display:grid;grid-template-columns:minmax(0,1fr) 132px;gap:10px;align-items:center;font-size:12px;line-height:16px}
+.uln + .uln{margin-top:5px}
+.uln .uv{color:var(--gray-400);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uln .uv b{font-weight:600;color:var(--gray-900)}
 .req{border:1px solid var(--warning-200);background:var(--warning-25);border-radius:var(--radius-lg);overflow:hidden}
 /* A count alone doesn't say what is being asked for or what it costs to ignore,
    which is the whole reason this banner sits at the top of the page. */
@@ -1095,14 +1094,11 @@ function usageCell(p){
   /* the control now names the pool, so the cell carries only the numbers */
   if(b) return `<div class="uwrap"><div class="un"><b>${b.used} / ${b.total}</b><span>pooled</span></div>
     ${ubar(b.used,b.total)}</div>`;
-  /* Every limit gets its own column: name, count, bar. Names are shortened so three fit
-     in the cell; the full name stays in the tooltip. */
-  return `<div class="uwrap"><div class="ucols">${metersOf(p).map(m=>`<div class="ucol" title="${m.k}">
-      <div class="uk">${shortMeter(m)}</div>
-      <div class="uv"><b>${m.used}</b> / ${m.inc}</div>
-      ${ubar(m.used,m.inc)}</div>`).join('')}</div></div>`;
+  /* Every limit gets its own line: bar, then count and unit. The full limit name stays in the tooltip. */
+  return `<div class="uwrap">${metersOf(p).map(m=>`<div class="uln" title="${m.k}">
+      ${ubar(m.used,m.inc)}
+      <span class="uv"><b>${m.used}</b> / ${m.inc} ${m.unit}</span></div>`).join('')}</div>`;
 }
-const shortMeter = m => /notifications$/i.test(m.k) ? 'Notifications' : m.k==='Voice calls' ? 'Voice' : m.k==='Outbound SMS' ? 'SMS' : m.k;
 
 /* On the Usage tab the limit is already in the usage cell, so this column carries
    only what isn't said elsewhere: the overage rule, or the markup. */
